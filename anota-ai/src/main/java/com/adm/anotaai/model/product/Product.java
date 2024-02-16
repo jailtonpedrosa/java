@@ -31,4 +31,11 @@ public class Product implements Serializable {
     private Double price;
     @Column
     private Category category;
+
+    public Product(ProductDTO productDTO) {
+        this.title = productDTO.title();
+        this.description = productDTO.description();
+        this.ownerId = productDTO.ownerId();
+        this.price = productDTO.price();
+    }
 }
