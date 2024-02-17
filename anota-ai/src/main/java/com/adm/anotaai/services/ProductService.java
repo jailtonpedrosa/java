@@ -8,6 +8,8 @@ import com.adm.anotaai.model.product.ProductDTO;
 import com.adm.anotaai.model.product.exceptions.ProductNotFoundException;
 import com.adm.anotaai.repositories.CategoryRepository;
 import com.adm.anotaai.repositories.ProductRepository;
+import com.adm.anotaai.services.aws.AwsSnsService;
+import com.adm.anotaai.services.aws.MessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +25,16 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private AwsSnsService awsSnsService;
+
     public Product insert(ProductDTO productDTO) {
         Category category = this.categoryService.findById(productDTO.categoryID())
                 .orElseThrow(CategoryNotFoundException::new);
         Product product = new Product(productDTO);
         product.setCategory(category);
         this.productRepository.save(product);
+        this.awsSnsService.publish(new MessageDTO(product.getOwnerId()));
         return product;
     }
 
@@ -36,8 +42,10 @@ public class ProductService {
         Product product = this.productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
 
-        this.categoryService.findById(productDTO.categoryID())
-                .ifPresent(product::setCategory);
+        if(productDTO.categoryID() != null) {
+            this.categoryService.findById(productDTO.categoryID())
+                    .ifPresent(product::setCategory);
+        }
 
         if(!productDTO.title().isEmpty()) {
             product.setTitle(productDTO.title());
@@ -52,6 +60,8 @@ public class ProductService {
         }
 
         this.productRepository.save(product);
+
+        this.awsSnsService.publish(new MessageDTO(product.getOwnerId()));
 
         return product;
     }
