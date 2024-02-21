@@ -3,6 +3,8 @@ package com.adm.simpleblog.model;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.adm.simpleblog.model.dto.UserDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +35,12 @@ public class User implements Serializable {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+    
+    public User(UserDTO userDTO) {
+    	this.id = userDTO.id();
+    	this.name = userDTO.name();
+    	this.email = userDTO.email();
     }
 
     public UUID getId() {
