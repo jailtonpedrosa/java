@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adm.simpleblog.model.User;
+import com.adm.simpleblog.model.dto.UserDTO;
 import com.adm.simpleblog.repository.UserRepository;
 import com.adm.simpleblog.service.exception.ObjectNotFoundException;
 
@@ -29,5 +30,13 @@ public class UserService {
 		}
 		
 		return user;
+	}
+
+	public User insert(User user) {
+		return userRepository.save(user);
+	}
+
+	public User fromDTO(UserDTO userDTO) {
+		return new User(userDTO);
 	}
 }
