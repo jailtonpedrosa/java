@@ -22,20 +22,26 @@ public class UserService {
 		return userRepository.findAll();
 	}
 	
-	public Optional<User> findById(UUID id) {
-		Optional<User> user = userRepository.findById(id);
-		
-		if(user == null) {
-			throw new ObjectNotFoundException("Objeto não encontrado");
-		}
-		
-		return user;
+	public User findById(UUID id) {
+		Optional<User> user = userRepository.findById(id);				
+		return user.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
 	}
 
 	public User insert(User user) {
 		return userRepository.save(user);
 	}
 	
+	public User update(User user) {
+		User newUser = findById(user.getId());	
+		updateData(newUser, user);		
+		return userRepository.save(newUser);
+	}
+	
+	private void updateData(User newUser, User user) {
+		newUser.setName(user.getName());
+		newUser.setEmail(user.getEmail());
+	}
+
 	public void delete(UUID id) {
 		findById(id);
 		userRepository.deleteById(id);

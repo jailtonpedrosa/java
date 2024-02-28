@@ -20,6 +20,7 @@ import com.adm.simpleblog.model.User;
 import com.adm.simpleblog.model.dto.UserDTO;
 import com.adm.simpleblog.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -40,9 +41,8 @@ public class UserController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDTO> findById(@PathVariable("id") UUID id) {
-		Optional<User> user = userService.findById(id);
-		var userModel = user.get();		
-		return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(userModel.getId(), userModel.getName(), userModel.getEmail()));
+		User user = userService.findById(id);
+		return ResponseEntity.status(HttpStatus.OK).body(new UserDTO(user.getId(), user.getName(), user.getEmail()));
 	}
 
 	@PostMapping
@@ -56,6 +56,14 @@ public class UserController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
 		userService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Void> update(@RequestBody UserDTO userDTO, @PathVariable("id") UUID id) {
+		User user = userService.fromDTO(userDTO);
+		user.setId(id);
+		user = userService.update(user);
 		return ResponseEntity.noContent().build();
 	}
 	
