@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,12 +46,22 @@ public class ProductController {
 	
 	@GetMapping
 	public ResponseEntity<List<ProductModel>> getAllProducts() {
-		return ResponseEntity.ok().body(this.productService.getAllProducts());
+		List<ProductModel> productsList = this.productService.getAllProducts();
+		
+		if(!productsList.isEmpty()) {
+			for(ProductModel product : productsList) {
+				UUID id = product.getIdProduct();
+				product.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+			}
+		}
+		
+		return ResponseEntity.ok().body(productsList);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductModel> getOneProduct(@PathVariable(value = "id") UUID id) {
 		var productModel = this.productService.findById(id);
+		productModel.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products List"));
 		return ResponseEntity.ok().body(productModel);
 	}
 	
