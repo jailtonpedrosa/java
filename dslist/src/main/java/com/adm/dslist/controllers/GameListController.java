@@ -8,26 +8,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adm.dslist.dtos.GameListRecordDto;
 import com.adm.dslist.dtos.GameMinRecordDto;
-import com.adm.dslist.dtos.GameRecordDto;
+import com.adm.dslist.services.GameListService;
 import com.adm.dslist.services.GameService;
 
 @RestController
-@RequestMapping(value = "games")
-public class GameController {
+@RequestMapping(value = "lists")
+public class GameListController {
 
+	@Autowired
+	private GameListService gameListService;
+	
 	@Autowired
 	private GameService gameService;
 
-	@GetMapping(value = "/{id}")
-	public GameRecordDto findById(@PathVariable Long id) {
-		GameRecordDto result = this.gameService.findById(id);
+	@GetMapping
+	public List<GameListRecordDto> findAll() {
+		List<GameListRecordDto> result = this.gameListService.findAll();
 		return result;
 	}
-
-	@GetMapping
-	public List<GameMinRecordDto> findAll() {
-		List<GameMinRecordDto> result = this.gameService.findAll();
+	
+	@GetMapping(value = "/{listId}/games")
+	public List<GameMinRecordDto> findByList(@PathVariable Long listId) {
+		List<GameMinRecordDto> result = this.gameService.findByList(listId);
 		return result;
 	}
 }
