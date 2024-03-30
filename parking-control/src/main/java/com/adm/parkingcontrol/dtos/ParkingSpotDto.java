@@ -1,9 +1,25 @@
 package com.adm.parkingcontrol.dtos;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-import jakarta.persistence.Column;
-
-public record ParkingSpotDto(String parkingSpotNumber, String licensePlateCar, String brandCar, String modelCar,
-		String colorCar, LocalDateTime registrationDate, String responsibleName, String apartment, String block) {
+public record ParkingSpotDto(
+		@NotBlank
+		String parkingSpotNumber,
+		@NotBlank
+		@Size(max = 10)
+		String licensePlateCar,
+		@NotBlank
+		String brandCar,
+		@NotBlank
+		@NotBlank
+		String modelCar,
+		@NotBlank
+		String colorCar,
+		@NotBlank 
+		String responsibleName,
+		@NotBlank
+		String apartment,
+		@NotBlank
+		String block) {
 }
