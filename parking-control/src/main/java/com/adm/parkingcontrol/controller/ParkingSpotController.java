@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,6 @@ import com.adm.parkingcontrol.service.ParkingSpotService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -84,5 +84,26 @@ public class ParkingSpotController {
 		this.parkingSpotService.delete(id);
 
 		return ResponseEntity.status(HttpStatus.OK).body("Parking spot deleted successfully.");
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Object> update(@PathVariable UUID id, @RequestBody @Valid ParkingSpotDto parkingSpotDto) {
+		Optional<ParkingSpotModel> parkingSpotModelOptional = this.parkingSpotService.findById(id);
+		
+		if(!parkingSpotModelOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parking spot not found!");
+		}
+
+		var parkingSpotModel = parkingSpotModelOptional.get();
+		parkingSpotModel.setParkingSpotNumber(parkingSpotDto.parkingSpotNumber());
+		parkingSpotModel.setLicensePlateCar(parkingSpotDto.licensePlateCar());
+		parkingSpotModel.setModelCar(parkingSpotDto.modelCar());
+		parkingSpotModel.setBrandCar(parkingSpotDto.brandCar());
+		parkingSpotModel.setColorCar(parkingSpotDto.colorCar());
+		parkingSpotModel.setResponsibleName(parkingSpotDto.responsibleName());
+		parkingSpotModel.setApartment(parkingSpotDto.apartment());
+		parkingSpotModel.setBlock(parkingSpotDto.block());
+
+		return ResponseEntity.status(HttpStatus.OK).body(this.parkingSpotService.save(parkingSpotModel));
 	}
 }
